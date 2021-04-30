@@ -67,7 +67,7 @@ Install the Connector using recipes. Run the following commands:
 - Start a commerce suite instance
 ```HYBRIS_HOME/installer$ ./install.sh -r [RECIPE_NAME] start```
   
-## Installing on [SAP Commerce Cloud](https://help.sap.com/viewer/product/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/v1905/en-US)
+## Installing on [SAP Commerce Cloud](https://help.sap.com/viewer/product/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/v2005/en-US)
 Follow the instructions below to install and deploy the Connector on SAP Commerce Cloud. The sample manifest.json included in the Connector serves as guide for the installation. Adapt your  manifest.json file to include Checkout.com extensions.  
 The public, private and shared keys are included as properties in the manifest as placeholder. Add your keys as properties in the SAP Commerce Cloud environments.  
 
