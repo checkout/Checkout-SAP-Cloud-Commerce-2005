@@ -29,8 +29,8 @@ Run the command ```<path autoload="true" dir="${HYBRIS_BIN_DIR}/modules/checkout
 
 6. Run the commands below to install specific add-ons of the yaccelatorstorefront (replace "yacceleratorstorefront" with your custom storefront if relevant)
 
-### Add-on:
-B2C: ```ant addoninstall -Daddonnames="checkoutaddon" -DaddonStorefront.yacceleratorstorefront="yacceleratorstorefront"```
+### Add-ons:
+- B2C Accelerator: ```ant addoninstall -Daddonnames="checkoutaddon" -DaddonStorefront.yacceleratorstorefront="yacceleratorstorefront"```
 
 ### Optional
 
@@ -67,12 +67,11 @@ Install the Connector using recipes. Run the following commands:
 - Start a commerce suite instance
 ```HYBRIS_HOME/installer$ ./install.sh -r [RECIPE_NAME] start```
   
-## Installing on [CCV2](https://help.sap.com/viewer/product/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/v1905/en-US)
+## Installing on [SAP Commerce Cloud](https://help.sap.com/viewer/product/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/v1905/en-US)
+Follow the instructions below to install and deploy the Connector on SAP Commerce Cloud. The sample manifest.json included in the Connector serves as guide for the installation. Adapt your  manifest.json file to include Checkout.com extensions.  
+The public, private and shared keys are included as properties in the manifest as placeholder. Add your keys as properties in the SAP Commerce Cloud environments.  
 
-The connector can also be installed and deployed on CCV2. There is a sample manifest.json included to serve as a guide. Adapt your current manifest.json to include Checkout.com extensions.  
-The public, private and shared keys are included as properties in the manifest, but they are added just as a reminder, and they should be added as properties in the CCV2 environments.  
-
-In order to prepare the repository to be deployed to CCV2, follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html). The extensions from the connector can be included under a folder from `core-customize` 
+Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.
 
 # Release Notes
 - Connector for SAP Commerce Cloud version 1905, B2C Accelerator
