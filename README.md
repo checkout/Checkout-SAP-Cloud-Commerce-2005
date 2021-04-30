@@ -71,7 +71,7 @@ Install the Connector using recipes. Run the following commands:
 Follow the instructions below to install and deploy the Connector on SAP Commerce Cloud. The sample manifest.json included in the Connector serves as guide for the installation. Adapt your  manifest.json file to include Checkout.com extensions.  
 The public, private and shared keys are included as properties in the manifest as placeholder. Add your keys as properties in the SAP Commerce Cloud environments.  
 
-Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.
+Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2005/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.
 
 # Release Notes
 - Connector for SAP Commerce Cloud version 1905, B2C Accelerator
