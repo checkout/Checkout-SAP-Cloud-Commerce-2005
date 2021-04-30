@@ -4,7 +4,7 @@ The Connector for SAP Commerce Cloud (formerly Hybris) enables customers to impl
 
 ## Release Compatibility
 This release is compatible with:
-- SAP Commerce: B2C Accelerator of SAP Commerce Cloud 1905. It is advised to install the latest patch version of SAP Commerce Cloud.
+- SAP Commerce: B2C Accelerator of SAP Commerce Cloud 2005. It is advised to install the latest patch version of SAP Commerce Cloud.
 - Java 11.
 - Checkout.com Java SDK version 2.
 
@@ -80,7 +80,7 @@ In order to prepare the repository to be deployed to CCV2, follow [this guidelin
 - 3DS 2.0 (PSD2). In case of a non-frictionless interaction, where the user is required to enter additional information related to the Strong Customer Authentication (SCA). This is a hosted solution page provided by Checkout.com. 
 - SAP Commerce Backoffice. The connector provides specific customisations for the backoffice to ease the administration, configuration and management of all the operations related to the integration with the Checkout.com payment solution.
 - SAP WCMS. The connector enables business users to add cards and APMs using CMS components.
-- Cards (Visa, Mastercard, Carte Bancaire, Mada, Amex, JCB, Discover, Diners) and APM (Klarna, Mada, Fawry, Google Pay, Apple Pay) payment methods. 
+- Cards (Visa, Mastercard, Carte Bancaire, Mada, Amex, JCB, Discover, Diners) and APM (Klarna, Fawry, Sofort, Paypal, Poli, Ideal, Alipay, Benefitpay, Bancontact, Giropay, Eps, Knet, Qpay, Multibanco, P24, oxxo, Google Pay, Apple Pay) payment methods.
 
 # Support
 Contact your Checkout.com team if you have any question, technical problem or feature request for the SAP Commerce Cloud Connector.
