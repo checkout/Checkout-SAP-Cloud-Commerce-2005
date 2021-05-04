@@ -6,7 +6,7 @@ The Connector for SAP Commerce Cloud (formerly Hybris) enables customers to impl
 This release is compatible with:
 - SAP Commerce: B2C Accelerator of SAP Commerce Cloud 2005. It is advised to install the latest patch version of SAP Commerce Cloud.
 - Java 11.
-- Checkout.com Java SDK version 2.
+- Checkout.com Java SDK version 3.
 
 It is advised to use the latest release of this Connector available in GitHub.
 
@@ -74,7 +74,7 @@ The public, private and shared keys are included as properties in the manifest a
 Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2005/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.
 
 # Release Notes
-- Connector for SAP Commerce Cloud version 1905, B2C Accelerator
+- Connector for SAP Commerce Cloud version 2005, B2C Accelerator
 - Support for SAP Commerce Fulfilment process incl. Checkout.com APIs for authorisation, capture, refund and void.
 - 3DS 2.0 (PSD2). In case of a non-frictionless interaction, where the user is required to enter additional information related to the Strong Customer Authentication (SCA). This is a hosted solution page provided by Checkout.com. 
 - SAP Commerce Backoffice. The connector provides specific customisations for the backoffice to ease the administration, configuration and management of all the operations related to the integration with the Checkout.com payment solution.
