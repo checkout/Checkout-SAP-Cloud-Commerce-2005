@@ -29,8 +29,8 @@ Run the command ```<path autoload="true" dir="${HYBRIS_BIN_DIR}/modules/checkout
 
 6. Run the commands below to install specific add-ons of the yaccelatorstorefront (replace "yacceleratorstorefront" with your custom storefront if relevant)
 
-### Add-ons:
-- B2C Accelerator: ```ant addoninstall -Daddonnames="checkoutaddon" -DaddonStorefront.yacceleratorstorefront="yacceleratorstorefront"```
+### Add-on:
+B2C: ```ant addoninstall -Daddonnames="checkoutaddon" -DaddonStorefront.yacceleratorstorefront="yacceleratorstorefront"```
 
 ### Optional
 
@@ -66,20 +66,15 @@ Install the Connector using recipes. Run the following commands:
 ```HYBRIS_HOME/installer$ ./install.sh -r [RECIPE_NAME] initialize```
 - Start a commerce suite instance
 ```HYBRIS_HOME/installer$ ./install.sh -r [RECIPE_NAME] start```
-  
+
 ## Installing on [SAP Commerce Cloud](https://help.sap.com/viewer/product/SAP_COMMERCE_CLOUD_PUBLIC_CLOUD/v2005/en-US)
 Follow the instructions below to install and deploy the Connector on SAP Commerce Cloud. The sample manifest.json included in the Connector serves as guide for the installation. Adapt your  manifest.json file to include Checkout.com extensions.  
 The public, private and shared keys are included as properties in the manifest as placeholder. Add your keys as properties in the SAP Commerce Cloud environments.  
-
-Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2005/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.
+Follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v2005/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html) to prepare the repository for the deployment onto SAP Commerce Cloud. Include the Connector extensions in the folder `core-customize`.o prepare the repository to be deployed to CCV2, follow [this guideline](https://help.sap.com/viewer/1be46286b36a4aa48205be5a96240672/v1905/en-US/1ee068bcce7845b8ab4ed9cdd54577fb.html). The extensions from the connector can be included under a folder from `core-customize` 
 
 # Release Notes
-- Connector for SAP Commerce Cloud version 2005, B2C Accelerator
-- Support for SAP Commerce Fulfilment process incl. Checkout.com APIs for authorisation, capture, refund and void.
-- 3DS 2.0 (PSD2). In case of a non-frictionless interaction, where the user is required to enter additional information related to the Strong Customer Authentication (SCA). This is a hosted solution page provided by Checkout.com. 
-- SAP Commerce Backoffice. The connector provides specific customisations for the backoffice to ease the administration, configuration and management of all the operations related to the integration with the Checkout.com payment solution.
-- SAP WCMS. The connector enables business users to add cards and APMs using CMS components.
-- Cards (Visa, Mastercard, Carte Bancaire, Mada, Amex, JCB, Discover, Diners) and APM (Klarna, Fawry, Sofort, Paypal, Poli, Ideal, Alipay, Benefitpay, Bancontact, Giropay, Eps, Knet, Qpay, Multibanco, P24, oxxo, Google Pay, Apple Pay) payment methods.
+- GooglePay 3D Secure payment support for accelerator
+- Update googlePay image
 
 # Support
 Contact your Checkout.com team if you have any question, technical problem or feature request for the SAP Commerce Cloud Connector.
