@@ -1,43 +1,50 @@
 package com.checkout.hybris.addon.controllers.payment;
 
-import com.checkout.hybris.facades.address.CheckoutComAddressFacade;
+import com.checkout.hybris.facades.accelerator.CheckoutComCheckoutFlowFacade;
+import com.checkout.hybris.facades.address.CheckoutComWalletAddressFacade;
 import com.checkout.hybris.facades.beans.*;
+import com.checkout.hybris.facades.customer.CheckoutComCustomerFacade;
 import com.checkout.hybris.facades.enums.WalletPaymentType;
-import com.checkout.hybris.facades.merchant.CheckoutComMerchantConfigurationFacade;
+import com.checkout.hybris.facades.payment.wallet.CheckoutComApplePayFacade;
+import com.checkout.hybris.facades.payment.wallet.CheckoutComWalletOrderFacade;
 import de.hybris.platform.acceleratorstorefrontcommons.annotations.RequireHardLogIn;
-import de.hybris.platform.commercefacades.user.data.AddressData;
-import de.hybris.platform.commerceservices.strategies.CheckoutCustomerStrategy;
-import de.hybris.platform.core.model.user.CustomerModel;
-import de.hybris.platform.servicelayer.dto.converter.Converter;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
+import de.hybris.platform.acceleratorstorefrontcommons.security.GUIDCookieStrategy;
+import de.hybris.platform.commercefacades.user.UserFacade;
+import de.hybris.platform.commerceservices.customer.DuplicateUidException;
+import de.hybris.platform.order.InvalidCartException;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.Optional;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping(value = "/checkout/payment/checkout-com/applepay")
-public class CheckoutComApplePayController extends CheckoutComAbstractWalletPaymentController {
+public class CheckoutComApplePayController {
 
     @Resource
-    protected CheckoutComMerchantConfigurationFacade checkoutComMerchantConfigurationFacade;
+    protected CheckoutComWalletOrderFacade checkoutComWalletOrderFacade;
     @Resource
-    protected Converter<ApplePaySettingsData, ApplePayValidateMerchantData> checkoutComApplePayConfigDataToValidateMerchantRequestDTOPopulatingConverter;
+    protected CheckoutComWalletAddressFacade checkoutComWalletAddressFacade;
     @Resource
-    protected Converter<ApplePayPaymentContact, AddressData> checkoutComApplePayAddressReverseConverter;
-    @Resource
-    protected CheckoutComAddressFacade checkoutComAddressFacade;
-    @Resource
-    protected CheckoutCustomerStrategy checkoutCustomerStrategy;
+    protected CheckoutComApplePayFacade checkoutComApplePayFacade;
+    @Resource(name = "userFacade")
+    protected UserFacade userFacade;
+    @Resource(name = "customerFacade")
+    protected CheckoutComCustomerFacade checkoutComCustomerFacade;
+    @Resource(name = "checkoutComCheckoutExpressPlaceOrderCartValidator")
+    protected Validator checkoutComCheckoutExpressPlaceOrderCartValidator;
+    @Resource(name = "checkoutFlowFacade")
+    protected CheckoutComCheckoutFlowFacade checkoutComCheckoutFlowFacade;
+    @Resource(name = "guidCookieStrategy")
+    protected GUIDCookieStrategy guidCookieStrategy;
+
 
     /**
      * Validates the session for apple pay
@@ -48,21 +55,7 @@ public class CheckoutComApplePayController extends CheckoutComAbstractWalletPaym
     @PostMapping(value = "/request-session", consumes = {MediaType.APPLICATION_JSON_VALUE})
     @ResponseBody
     public Object requestPaymentSession(@RequestBody final ApplePayValidateMerchantRequestData validateMerchantRequestData) {
-        final Optional<ApplePayValidateMerchantData> validateMerchantDataOptional = getValidateMerchantData();
-
-        final ApplePayValidateMerchantData validateMerchantData = validateMerchantDataOptional.orElse(null);
-
-        final SSLConnectionSocketFactory applePayConnectionFactory = checkoutComPaymentFacade.createApplePayConnectionFactory();
-
-        final CloseableHttpClient httpClient = HttpClients.custom()
-                .setSSLSocketFactory(applePayConnectionFactory)
-                .build();
-
-        final HttpComponentsClientHttpRequestFactory requestFactory = new HttpComponentsClientHttpRequestFactory(httpClient);
-
-        final RestTemplate restTemplate = new RestTemplate(requestFactory);
-
-        return restTemplate.postForObject(validateMerchantRequestData.getValidationURL(), validateMerchantData, Object.class);
+        return checkoutComApplePayFacade.requestApplePayPaymentSession(validateMerchantRequestData);
     }
 
     /**
@@ -74,32 +67,43 @@ public class CheckoutComApplePayController extends CheckoutComAbstractWalletPaym
     @PostMapping(value = "/placeApplePayOrder")
     @RequireHardLogIn
     @ResponseBody
-    public PlaceWalletOrderDataResponse placeApplePayOrder(@RequestBody final ApplePayAuthorisationRequest authorisationRequest) {
-
-        handleAndSaveAddresses(authorisationRequest.getBillingContact());
-
-        return placeWalletOrder(authorisationRequest.getToken().getPaymentData(), WalletPaymentType.APPLEPAY);
+    public PlaceWalletOrderDataResponse placeApplePayOrder(@RequestBody final ApplePayAuthorisationRequest authorisationRequest) throws InvalidCartException {
+        if (checkoutComCustomerFacade.isApplePayExpressGuestCustomer()) {
+            checkoutComCustomerFacade.updateExpressCheckoutUserEmail(authorisationRequest.getShippingContact().getEmailAddress(), authorisationRequest.getShippingContact().getGivenName());
+        }
+        if (authorisationRequest.getBillingContact() != null) {
+            checkoutComWalletAddressFacade.handleAndSaveBillingAddress(authorisationRequest.getBillingContact());
+        }
+        if (authorisationRequest.getShippingContact() != null) {
+            checkoutComWalletAddressFacade.handleAndSaveShippingAddress(authorisationRequest.getShippingContact());
+        }
+        checkoutComWalletOrderFacade.validateCartForPlaceOrder(checkoutComCheckoutExpressPlaceOrderCartValidator);
+        return checkoutComWalletOrderFacade.placeWalletOrder(authorisationRequest.getToken().getPaymentData(), WalletPaymentType.APPLEPAY);
     }
 
     /**
-     * Populate the address data based on the form values and set the billing address into the cart
+     * Sets the delivery method selected
      *
-     * @param billingContact the billing contact from the form
+     * @return the cart info updated after the delivery method has been set
      */
-    protected void handleAndSaveAddresses(final ApplePayPaymentContact billingContact) {
-        final AddressData addressData = checkoutComApplePayAddressReverseConverter.convert(billingContact);
-        if (addressData != null) {
-            final CustomerModel currentUserForCheckout = checkoutCustomerStrategy.getCurrentUserForCheckout();
-            addressData.setEmail(currentUserForCheckout != null ? currentUserForCheckout.getContactEmail() : null);
-        }
-
-        getUserFacade().addAddress(addressData);
-
-        checkoutComAddressFacade.setCartBillingDetails(addressData);
+    @PostMapping(value = "/deliveryMethod")
+    @RequireHardLogIn
+    @ResponseBody
+    public ApplePayShippingMethodUpdate setDeliveryMode(@ApiParam(required = true) @RequestBody final ApplePayShippingMethod applePayShippingMethod) {
+        checkoutComCheckoutFlowFacade.setDeliveryMode(applePayShippingMethod.getIdentifier());
+        return checkoutComApplePayFacade.getApplePayShippingMethodUpdate();
     }
 
-    protected Optional<ApplePayValidateMerchantData> getValidateMerchantData() {
-        final Optional<ApplePaySettingsData> applePayConfig = checkoutComMerchantConfigurationFacade.getApplePaySettings();
-        return applePayConfig.map(applePaySettingsData -> checkoutComApplePayConfigDataToValidateMerchantRequestDTOPopulatingConverter.convert(applePaySettingsData));
+    @PostMapping(value = "/deliveryAddress", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseBody
+    @ApiOperation(nickname = "setDeliveryAddress", value = "Creates a delivery address for the cart.")
+    public ApplePayShippingContactUpdate setDeliveryAddress(final HttpServletRequest request, final HttpServletResponse response, @ApiParam(required = true) @RequestBody final ApplePayPaymentContact applePayPaymentContact) throws DuplicateUidException {
+        if (userFacade.isAnonymousUser()) {
+            checkoutComCustomerFacade.createApplePayExpressCheckoutGuestUserForAnonymousCheckoutAndSetItOnSession();
+            guidCookieStrategy.setCookie(request, response);
+        }
+        checkoutComWalletAddressFacade.handleAndSaveShippingAddress(applePayPaymentContact);
+        return checkoutComApplePayFacade.getApplePayShippingContactUpdate();
     }
 }
